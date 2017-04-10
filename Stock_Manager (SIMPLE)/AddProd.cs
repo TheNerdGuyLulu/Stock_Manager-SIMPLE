@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Stock_Manager__SIMPLE_
 {
-    public partial class Form1 : Form
+    public partial class AddProd : Form
     {
-        public Form1()
+        public AddProd()
         {
             InitializeComponent();
         }
