@@ -45,18 +45,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddProd.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AddProd.Designer.cs">
-      <DependentUpon>AddProd.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Global.cs" />
+    <Compile Include="Insert.cs" />
     <Compile Include="Pos.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Pos.Designer.cs">
       <DependentUpon>Pos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Product.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Pos.resx">
@@ -64,18 +61,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -86,15 +83,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\15534971_1801076240167177_1138776150076555264_n.jpg" />
+    <None Include="Resources\logo.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\0.jpg" />
     <Content Include="Resources\1.jpg" />
     <Content Include="Resources\2.jpeg" />
+    <Content Include="Resources\exit.png" />
+    <None Include="Resources\icon.ico" />
+    <None Include="Resources\plus.png" />
+    <None Include="Resources\wrong.png" />
     <Content Include="Resources\3.jpg" />
     <Content Include="Resources\4.jpg" />
     <Content Include="Resources\5.jpg" />
+    <None Include="Resources\correct.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

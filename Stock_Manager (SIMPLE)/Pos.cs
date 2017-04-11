@@ -12,54 +12,47 @@ namespace Stock_Manager__SIMPLE_
 {
     public partial class Pos : Form
     {
-        // string[] codProd = new string[6];
-        string[] codProd;
-        string[] nomeProd;
-        decimal[] valorProd;
         public Pos()
         {
             InitializeComponent();
+            Global.insert = new Insert();
+            Global.insert.InsertProduct(new Product("Raquete", 1.2M));
+            Global.insert.InsertProduct(new Product("Raquete", 12.2M));
+            Global.insert.InsertProduct(new Product("Raquete", 25.2M));
         }
 
         private void Pos_Load(object sender, EventArgs e)
         {
-            loadProducts();
+            panel2.Visible = false;
+
+            foreach (var item in Global.insert.ProductList)
+            {
+                lbProduct.Items.Add(string.Format("#{0} - {1} - {2}", item.codProd, item.nomeProd, item.valorProd));
+            }
+            /*
             int i = 0;
             while (i < codProd.Length)
             {
-                lbProduct.Items.Add(string.Format("#{0} - {1} - {2}", codProd[i], nomeProd[i], valorProd[i]));
+                lbProduct.Items.Add(string.Format("#{0} - {1}", codProd[i], nomeProd[i]));
                 i++;
 
-            }
+            }*/
 
         }
 
-        private void loadProducts()
-        {
-            // string[] codProd = {"1", "2", "3", "4", "5", "6" };
-            codProd = new string[6] { "1", "2", "3", "4", "5", "6" };
-
-            nomeProd = new string[6] { "Raquete", "Bola", "Caixa", "Computador", "Prato", "Rádio" };
-
-            valorProd = new decimal[] { 24.3M, 15, 5, 999.99M, 2, 18 };
-        }
 
         private void showMsgBox()
         {
-            MessageBox.Show("No such thing", "Warning");
+           DialogResult mensage1 = MessageBox.Show("Não existe!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            // Func<DialogResult> showMsgBox = () => 
-
             if (!string.IsNullOrEmpty(tbCod.Text))
             {
-                int searchText;
-                bool searchTextParse = int.TryParse(tbCod.Text, out searchText);
-                if (searchTextParse)
+                if (int.TryParse(tbCod.Text, out int searchText))
                 {
-                    if (searchText >= 0 && searchText < codProd.Length)
+                    if (searchText >= 0 && searchText <= Global.insert.ProductList.Count())
                         lbProduct.SelectedIndex = searchText - 1;
                     else
                         showMsgBox();
@@ -69,21 +62,56 @@ namespace Stock_Manager__SIMPLE_
                     showMsgBox();
                 }
             }
+            else
+            {
+                showMsgBox();
+            }
         }
 
         private void lbProduct_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = lbProduct.SelectedIndex;
+
+            if (lbProduct.SelectedIndex >= 0 && lbProduct.SelectedIndex <= Global.insert.ProductList.Count())
+            {
+                var item = Global.insert.ProductList[selectedIndex];
+                tbTotal.Text = item.valorProd.ToString("C");
+            }
+            /*
+            int selectedIndex = lbProduct.SelectedIndex;
             if (lbProduct.SelectedIndex >= 0 && lbProduct.SelectedIndex < codProd.Length)
             {
                 tbTotal.Text = valorProd[selectedIndex].ToString("C");
                 pbProduct.Image = (Image)Properties.Resources.ResourceManager.GetObject("_" + selectedIndex.ToString());
-            }
+            }*/
         }
 
         private void tbCod_Enter(object sender, EventArgs e)
         {
             tbCod.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Deseja mesmo sair?", "Sair", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                Application.Exit();
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            panel1.Visible = false;
+            panel2.Visible = true;
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            panel1.Visible = true;
         }
     }
 }
