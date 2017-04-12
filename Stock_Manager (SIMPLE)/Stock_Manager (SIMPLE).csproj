@@ -89,6 +89,7 @@
     <Content Include="Resources\0.jpg" />
     <Content Include="Resources\1.jpg" />
     <Content Include="Resources\2.jpeg" />
+    <None Include="Resources\empty.gif" />
     <Content Include="Resources\exit.png" />
     <None Include="Resources\icon.ico" />
     <None Include="Resources\plus.png" />

@@ -15,13 +15,14 @@ namespace Stock_Manager__SIMPLE_
         }
         public string nomeProd { get; set; }
         public decimal valorProd { get; set; }
+        public int quantidadeProd { get; set; }
 
-
-        public Product(string _nomeProd, decimal _valorProd)
+        public Product(string _nomeProd, decimal _valorProd, int _quantidadeProd)
         {
             nomeProd = _nomeProd;
             valorProd = _valorProd;
             codProd = CalcCodProdIdentity();
+            quantidadeProd = _quantidadeProd;
         }
 
         int CalcCodProdIdentity()
