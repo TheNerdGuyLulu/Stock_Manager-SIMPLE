@@ -29,11 +29,6 @@ namespace Stock_Manager__SIMPLE_
                 throw;
             }
         }
-        ~BaseDados()
-        {
-            //Ver problema
-            //  productsSql.Close();
-        }
 
         public void Products(ListBox _listbox)
         {
@@ -101,7 +96,7 @@ namespace Stock_Manager__SIMPLE_
 
         public void UpdateData(string _name, decimal _price, int _quantity, int _id)
         {
-            string command = "UPDATE products SET name = @name price = @price, quantity = @quantity WHERE id = @id";
+            string command = "UPDATE products SET name = @name, price = @price, quantity = @quantity WHERE id = @id";
             SqlCommand cmd = new SqlCommand(command, productsSql);
             cmd.Parameters.AddWithValue("@name", _name);
             cmd.Parameters.AddWithValue("@price", _price);

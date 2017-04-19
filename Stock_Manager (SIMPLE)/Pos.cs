@@ -168,9 +168,7 @@ namespace Stock_Manager__SIMPLE_
                         if (decimal.TryParse(tbPrice.Text, out decimal price))
                         {
                             if (int.TryParse(tbQuant.Text, out int quant))
-                            {
                                 InsertData(tbName.Text, price, quant);
-                            }
                             else
                                 MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
@@ -179,54 +177,27 @@ namespace Stock_Manager__SIMPLE_
                     }
                     else
                     {
-
-
-                        async+doka+sdd
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    }
-                }
-            }
-
-
-                    if (decimal.TryParse(tbPrice.Text, out decimal price))
-                    {
                         if (int.TryParse(tbQuant.Text, out int quant))
-                        {
-                            InsertData(tbName.Text, price, quant);
-
-                        }
-                        else if (string.IsNullOrEmpty(tbQuant.Text))
-                        {
-                            InsertData(tbName.Text, price, 0);
-                        }
+                            InsertData(tbName.Text, 0, quant);
                         else
                             MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    else
-                        MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } else
+                }
+                else
                 {
-
+                    if (!string.IsNullOrEmpty(tbPrice.Text))
+                    {
+                        if (decimal.TryParse(tbPrice.Text, out decimal price))
+                            InsertData(tbName.Text, price, 0);
+                        else
+                            MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                        InsertData(tbName.Text, 0, 0);
                 }
             }
             else
-                MessageBox.Show("Preencha o nome!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                MessageBox.Show("Indique o nome do produto!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
             pbPreView.BackgroundImage = null;
             fileopened = 0;
         }
@@ -285,6 +256,46 @@ namespace Stock_Manager__SIMPLE_
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            if (!string.IsNullOrEmpty(tbVerName.Text))
+            {
+                if (!string.IsNullOrEmpty(tbVerQuant.Text))
+                {
+                    if (!string.IsNullOrEmpty(tbTotal.Text))
+                    {
+                        if (decimal.TryParse(tbTotal.Text, out decimal price))
+                        {
+                            if (int.TryParse(tbVerQuant.Text, out int quant))
+                                bd.UpdateData(tbVerName.Text, price, quant, (int)lbProduct.SelectedValue);
+                            else
+                                MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                            MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        if (int.TryParse(tbVerQuant.Text, out int quant))
+                            bd.UpdateData(tbVerName.Text, 0, quant, (int)lbProduct.SelectedValue);
+                        else
+                            MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(tbPrice.Text))
+                    {
+                        if (decimal.TryParse(tbTotal.Text, out decimal price))
+                            bd.UpdateData(tbVerName.Text, price, 0, (int)lbProduct.SelectedValue);
+                        else
+                            MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                        bd.UpdateData(tbVerName.Text, 0, 0, (int)lbProduct.SelectedValue);
+                }
+            }
+            else
+                MessageBox.Show("Indique o nome do produto!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
             tbTotal.Text = string.Format("{0} €", tbTotal.Text);
             tbTotal.ReadOnly = true;
             tbVerQuant.ReadOnly = true;
@@ -297,44 +308,7 @@ namespace Stock_Manager__SIMPLE_
             btnDelete.Enabled = true;
             btnSave.Visible = false;
             tbVerName.ReadOnly = true;
-
-            if (true)
-            {
-
-            }
-            /*
-            if (!string.IsNullOrEmpty(tbName.Text) || !string.IsNullOrEmpty(tbPrice.Text))
-            {
-                if (decimal.TryParse(tbPrice.Text, out decimal price))
-                {
-                    if (int.TryParse(tbQuant.Text, out int quant))
-                    {
-                        InsertData(tbName.Text, price, quant);
-
-                        tbName.Text = null;
-                        tbPrice.Text = null;
-                        tbQuant.Text = "0";
-                    }
-                    else if (string.IsNullOrEmpty(tbQuant.Text))
-                    {
-                        InsertData(tbName.Text, price, 0);
-
-                        tbName.Text = null;
-                        tbPrice.Text = null;
-                        tbQuant.Text = "0";
-                    }
-                    else
-                        MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else
-                    MessageBox.Show("O preço deve ser separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-                MessageBox.Show("Preencha todos os campos!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                */
-
-
-
+            bd.Products(lbProduct);
         }
 
     }
