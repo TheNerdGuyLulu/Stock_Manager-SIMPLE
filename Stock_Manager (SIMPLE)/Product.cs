@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Stock_Manager__SIMPLE_
 {
-    class Product
+    public class Product
     {
-
-        public int codProd 
+        public int codProd
         {
             get; set;
         }
@@ -21,24 +20,7 @@ namespace Stock_Manager__SIMPLE_
         {
             nomeProd = _nomeProd;
             valorProd = _valorProd;
-            codProd = CalcCodProdIdentity();
             quantidadeProd = _quantidadeProd;
-        }
-
-        int CalcCodProdIdentity()
-        {
-            int lastCod;
-
-            if (Global.insert.ProductList.Count > 0)
-            {
-                var item = Global.insert.ProductList.Last();
-                lastCod = int.Parse(item.codProd.ToString());
-                lastCod++;
-            }
-            else
-                lastCod = 1;
-
-            return lastCod;
         }
     }
 }

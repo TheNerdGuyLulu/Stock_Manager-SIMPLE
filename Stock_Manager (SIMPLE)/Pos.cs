@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -14,36 +16,23 @@ namespace Stock_Manager__SIMPLE_
 {
     public partial class Pos : Form
     {
+        BaseDados bd = new BaseDados();
+
         public Pos()
         {
             InitializeComponent();
-            Global.insert = new Insert();
-            Global.insert.InsertProduct(new Product("Raquete", 1.2M, 10));
-            Global.insert.InsertProduct(new Product("Bola", 12.2M, 0));
-            Global.insert.InsertProduct(new Product("Caixa", 25.2M, 0));
         }
 
         private void Pos_Load(object sender, EventArgs e)
         {
             panel2.Visible = false;
-
-            Products();
+            bd.Products(lbProduct);
         }
 
-        private void Products()
-        {
-            List<string> pessoasString = new List<string>();
-            pessoasString.Clear();
-            foreach (var item in Global.insert.ProductList)
-            {
-                pessoasString.Add(string.Format("#{0} - {1}", item.codProd, item.nomeProd));
-            }
-            lbProduct.DataSource = pessoasString;
-        }
 
         private void showMsgBox()
         {
-            DialogResult mensage1 = MessageBox.Show("Não existe!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            MessageBox.Show("Não existe!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -52,37 +41,45 @@ namespace Stock_Manager__SIMPLE_
             {
                 if (int.TryParse(tbCod.Text, out int searchText))
                 {
-                    if (searchText >= 0 && searchText <= Global.insert.ProductList.Count())
-                        lbProduct.SelectedIndex = searchText - 1;
-                    else
+                    lbProduct.SelectedIndex = 0;
+
+                    for (int i = 1; i < lbProduct.Items.Count; i++)
+                    {
+                        if (searchText == int.Parse(lbProduct.SelectedValue.ToString()))
+                        {
+                            lbProduct.SelectedValue = searchText;
+                            break;
+                        }
+                        lbProduct.SelectedIndex++;
+                    }
+
+                    if (searchText != int.Parse(lbProduct.SelectedValue.ToString()))
+                    {
+                        lbProduct.SelectedIndex = 0;
                         showMsgBox();
+                    }
                 }
                 else
-                {
                     showMsgBox();
-                }
             }
             else
-            {
                 showMsgBox();
-            }
         }
 
         private void lbProduct_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = lbProduct.SelectedIndex;
 
-            if (lbProduct.SelectedIndex >= 0 && lbProduct.SelectedIndex <= Global.insert.ProductList.Count())
+            if (lbProduct.SelectedIndex >= 0 && lbProduct.SelectedIndex <= bd.CountRows())
             {
-                tbTotal.Text = Global.insert.ProductList[selectedIndex].valorProd.ToString("C");
-                tbVerQuant.Text = Global.insert.ProductList[selectedIndex].quantidadeProd.ToString();
-                selectedIndex++;
-                string path = Application.StartupPath + "\\Images\\" + selectedIndex + ".jpg";
+                tbVerName.Text = bd.PriceQuantity().Rows[selectedIndex][2].ToString();
+                tbTotal.Text = decimal.Parse(bd.PriceQuantity().Rows[selectedIndex][0].ToString()).ToString("C");
+                tbVerQuant.Text = int.Parse(bd.PriceQuantity().Rows[selectedIndex][1].ToString()).ToString();
+                string path = Application.StartupPath + "\\Images\\" + lbProduct.SelectedValue + ".jpg";
                 if (File.Exists(path))
                     pbProduct.BackgroundImage = new Bitmap(path);
                 else
                     pbProduct.BackgroundImage = Properties.Resources.empty;
-
             }
         }
 
@@ -105,19 +102,29 @@ namespace Stock_Manager__SIMPLE_
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (Global.insert.ProductList.Count == 0)
-            {
+            if (bd.CountRows() == 0)
                 MessageBox.Show("Não existem produtos!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
             else
             {
                 if (MessageBox.Show("Deseja mesmo remover o produto selecionado?", "Eliminar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    Global.insert.ProductList.RemoveAt(lbProduct.SelectedIndex);
-                    Products();
+                    pbProduct.BackgroundImage.Dispose();
+                    File.Delete(Application.StartupPath + "\\Images\\" + lbProduct.SelectedValue + ".jpg");
+                    bd.DeleteData((int)lbProduct.SelectedValue);
+                    bd.Products(lbProduct);
                 }
             }
+
+            if (lbProduct.Items.Count == 0)
+            {
+                tbTotal.Text = null;
+                tbVerQuant.Text = null;
+                pbProduct.BackgroundImage = null;
+            }
         }
+
+        static OpenFileDialog open = new OpenFileDialog();
+        public static int fileopened = 0;
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
@@ -127,10 +134,9 @@ namespace Stock_Manager__SIMPLE_
             tbPrice.Text = null;
             tbQuant.Text = "0";
             pbPreView.BackgroundImage = null;
+            fileopened = 0;
         }
 
-        OpenFileDialog open = new OpenFileDialog();
-        int fileopened = 0;
 
         private void btnAddImg_Click(object sender, EventArgs e)
         {
@@ -153,6 +159,150 @@ namespace Stock_Manager__SIMPLE_
 
         private void btnAddProduto_Click(object sender, EventArgs e)
         {
+            if (!string.IsNullOrEmpty(tbName.Text))
+            {
+                if (!string.IsNullOrEmpty(tbQuant.Text))
+                {
+                    if (!string.IsNullOrEmpty(tbPrice.Text))
+                    {
+                        if (decimal.TryParse(tbPrice.Text, out decimal price))
+                        {
+                            if (int.TryParse(tbQuant.Text, out int quant))
+                            {
+                                InsertData(tbName.Text, price, quant);
+                            }
+                            else
+                                MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                            MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+
+
+                        async+doka+sdd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    }
+                }
+            }
+
+
+                    if (decimal.TryParse(tbPrice.Text, out decimal price))
+                    {
+                        if (int.TryParse(tbQuant.Text, out int quant))
+                        {
+                            InsertData(tbName.Text, price, quant);
+
+                        }
+                        else if (string.IsNullOrEmpty(tbQuant.Text))
+                        {
+                            InsertData(tbName.Text, price, 0);
+                        }
+                        else
+                            MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                        MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } else
+                {
+
+                }
+            }
+            else
+                MessageBox.Show("Preencha o nome!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            pbPreView.BackgroundImage = null;
+            fileopened = 0;
+        }
+
+        private void InsertData(string _name, decimal _price, int _quant)
+        {
+            bd.InsertData(new Product(_name, _price, _quant));
+            panel2.Visible = false;
+            panel1.Visible = true;
+            bd.Products(lbProduct);
+            tbName.Text = null;
+            tbPrice.Text = null;
+            tbQuant.Text = "0";
+        }
+
+        public static void InsertImage(int id)
+        {
+            Bitmap productImage = new Bitmap(open.FileName);
+            string path = Application.StartupPath;
+            string totalpath = path + "\\Images\\" + id + ".jpg";
+            productImage.Save(totalpath, ImageFormat.Jpeg);
+        }
+
+        public static void DeleteImage(int id)
+        {
+            string path = Application.StartupPath;
+            string totalpath = path + "\\Images\\" + id + ".jpg";
+            File.Delete(totalpath);
+        }
+
+        private void tbQuant_Click(object sender, EventArgs e)
+        {
+            tbQuant.SelectAll();
+        }
+
+        string tbTotalText;
+        string tbVerQuantText;
+
+        private void btnEditar_Click(object sender, EventArgs e)
+        {
+            tbTotal.Text = tbTotal.Text.Substring(0, tbTotal.Text.Length - 2);
+            tbTotal.ReadOnly = false;
+            tbVerQuant.ReadOnly = false;
+            btnEditar.Visible = false;
+            lbProduct.Enabled = false;
+            tbCod.Enabled = false;
+            btnSearch.Enabled = false;
+            btnSearch.BackColor = Color.White;
+            btnAdd.Enabled = false;
+            btnDelete.Enabled = false;
+            btnSave.Visible = true;
+            tbVerName.ReadOnly = false;
+            tbTotalText = tbTotal.Text;
+            tbVerQuantText = tbVerQuant.Text;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            tbTotal.Text = string.Format("{0} €", tbTotal.Text);
+            tbTotal.ReadOnly = true;
+            tbVerQuant.ReadOnly = true;
+            btnEditar.Visible = true;
+            lbProduct.Enabled = true;
+            tbCod.Enabled = true;
+            btnSearch.Enabled = true;
+            btnSearch.BackColor = Color.Black;
+            btnAdd.Enabled = true;
+            btnDelete.Enabled = true;
+            btnSave.Visible = false;
+            tbVerName.ReadOnly = true;
+
+            if (true)
+            {
+
+            }
+            /*
             if (!string.IsNullOrEmpty(tbName.Text) || !string.IsNullOrEmpty(tbPrice.Text))
             {
                 if (decimal.TryParse(tbPrice.Text, out decimal price))
@@ -160,11 +310,6 @@ namespace Stock_Manager__SIMPLE_
                     if (int.TryParse(tbQuant.Text, out int quant))
                     {
                         InsertData(tbName.Text, price, quant);
-                       
-                        if (fileopened == 1)
-                            InsertImage();
-                        else
-                            DeleteImage();
 
                         tbName.Text = null;
                         tbPrice.Text = null;
@@ -174,57 +319,23 @@ namespace Stock_Manager__SIMPLE_
                     {
                         InsertData(tbName.Text, price, 0);
 
-                        if (fileopened == 1)
-                            InsertImage();
-                        else
-                            DeleteImage();
-
                         tbName.Text = null;
                         tbPrice.Text = null;
                         tbQuant.Text = "0";
                     }
                     else
-                    {
                         MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
                 }
                 else
                     MessageBox.Show("O preço deve ser separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
                 MessageBox.Show("Preencha todos os campos!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                */
 
-            pbPreView.BackgroundImage = null;
+
+
         }
 
-        private void InsertData(string _name, decimal _price, int _quant)
-        {
-            Global.insert.InsertProduct(new Product(_name, _price, _quant));
-            panel2.Visible = false;
-            panel1.Visible = true;
-            Products();
-        }
-
-        private void InsertImage()
-        {
-            Bitmap productImage = new Bitmap(open.FileName);
-            var item = Global.insert.ProductList.Last();
-            string path = Application.StartupPath;
-            string totalpath = path + "\\Images\\" + item.codProd.ToString() + ".jpg";
-            productImage.Save(totalpath, ImageFormat.Jpeg);
-        }
-
-        private void DeleteImage()
-        {
-            var item = Global.insert.ProductList.Last();
-            string path = Application.StartupPath;
-            string totalpath = path + "\\Images\\" + item.codProd.ToString() + ".jpg";
-            File.Delete(totalpath);
-        }
-
-        private void tbQuant_Click(object sender, EventArgs e)
-        {
-            tbQuant.SelectAll();
-        }
     }
 }
