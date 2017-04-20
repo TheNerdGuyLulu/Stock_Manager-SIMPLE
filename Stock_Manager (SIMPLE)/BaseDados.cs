@@ -7,6 +7,9 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace Stock_Manager__SIMPLE_
 {
@@ -58,9 +61,27 @@ namespace Stock_Manager__SIMPLE_
             data.Close();
             data.Dispose();
             if (Pos.fileopened == 1)
-                Pos.InsertImage(id);
+            {
+                InsertImage(id);
+                Pos.fileopened = 0;
+            }
             else
-                Pos.DeleteImage(id);
+                DeleteImage(id);
+        }
+
+        public static void InsertImage(int id)
+        {
+            Bitmap productImage = new Bitmap(Pos.open.FileName);
+            string path = Application.StartupPath;
+            string totalpath = path + "\\Images\\" + id + ".jpg";
+            productImage.Save(totalpath, ImageFormat.Jpeg);
+        }   
+
+        public static void DeleteImage(int id)
+        {
+            string path = Application.StartupPath;
+            string totalpath = path + "\\Images\\" + id + ".jpg";
+            File.Delete(totalpath);
         }
 
         public int CountRows()
@@ -104,6 +125,12 @@ namespace Stock_Manager__SIMPLE_
             cmd.Parameters.AddWithValue("@id", _id);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
+
+            if (Pos.fileopened == 1)
+            {
+                InsertImage(_id);
+                Pos.fileopened = 0;
+            }
         }
     }
 }

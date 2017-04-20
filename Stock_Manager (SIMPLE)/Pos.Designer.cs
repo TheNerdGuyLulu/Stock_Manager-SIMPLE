@@ -33,6 +33,8 @@ namespace Stock_Manager__SIMPLE_
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Pos));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lbVerName = new System.Windows.Forms.Label();
+            this.tbVerName = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnEditar = new System.Windows.Forms.Button();
             this.lblVerQuant = new System.Windows.Forms.Label();
@@ -61,8 +63,8 @@ namespace Stock_Manager__SIMPLE_
             this.lblName = new System.Windows.Forms.Label();
             this.pbLogo = new System.Windows.Forms.PictureBox();
             this.ttExit = new System.Windows.Forms.ToolTip(this.components);
-            this.tbVerName = new System.Windows.Forms.TextBox();
-            this.lbVerName = new System.Windows.Forms.Label();
+            this.btnChangeImg = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbProduct)).BeginInit();
             this.panel2.SuspendLayout();
@@ -72,6 +74,8 @@ namespace Stock_Manager__SIMPLE_
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnCancel);
+            this.panel1.Controls.Add(this.btnChangeImg);
             this.panel1.Controls.Add(this.lbVerName);
             this.panel1.Controls.Add(this.tbVerName);
             this.panel1.Controls.Add(this.btnSave);
@@ -94,6 +98,25 @@ namespace Stock_Manager__SIMPLE_
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(430, 421);
             this.panel1.TabIndex = 14;
+            // 
+            // lbVerName
+            // 
+            this.lbVerName.AutoSize = true;
+            this.lbVerName.Location = new System.Drawing.Point(173, 211);
+            this.lbVerName.Name = "lbVerName";
+            this.lbVerName.Size = new System.Drawing.Size(45, 17);
+            this.lbVerName.TabIndex = 20;
+            this.lbVerName.Text = "Nome";
+            // 
+            // tbVerName
+            // 
+            this.tbVerName.Location = new System.Drawing.Point(264, 208);
+            this.tbVerName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbVerName.Name = "tbVerName";
+            this.tbVerName.ReadOnly = true;
+            this.tbVerName.Size = new System.Drawing.Size(160, 22);
+            this.tbVerName.TabIndex = 19;
+            this.tbVerName.TabStop = false;
             // 
             // btnSave
             // 
@@ -426,24 +449,38 @@ namespace Stock_Manager__SIMPLE_
             this.pbLogo.TabIndex = 0;
             this.pbLogo.TabStop = false;
             // 
-            // tbVerName
+            // btnChangeImg
             // 
-            this.tbVerName.Location = new System.Drawing.Point(264, 208);
-            this.tbVerName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbVerName.Name = "tbVerName";
-            this.tbVerName.ReadOnly = true;
-            this.tbVerName.Size = new System.Drawing.Size(160, 22);
-            this.tbVerName.TabIndex = 19;
-            this.tbVerName.TabStop = false;
+            this.btnChangeImg.AutoSize = true;
+            this.btnChangeImg.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnChangeImg.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnChangeImg.Location = new System.Drawing.Point(40, 195);
+            this.btnChangeImg.Name = "btnChangeImg";
+            this.btnChangeImg.Size = new System.Drawing.Size(115, 29);
+            this.btnChangeImg.TabIndex = 16;
+            this.btnChangeImg.Text = "Trocar imagem";
+            this.btnChangeImg.UseVisualStyleBackColor = true;
+            this.btnChangeImg.Visible = false;
+            this.btnChangeImg.Click += new System.EventHandler(this.btnChangeImg_Click);
             // 
-            // lbVerName
+            // btnCancel
             // 
-            this.lbVerName.AutoSize = true;
-            this.lbVerName.Location = new System.Drawing.Point(173, 211);
-            this.lbVerName.Name = "lbVerName";
-            this.lbVerName.Size = new System.Drawing.Size(45, 17);
-            this.lbVerName.TabIndex = 20;
-            this.lbVerName.Text = "Nome";
+            this.btnCancel.AutoSize = true;
+            this.btnCancel.BackColor = System.Drawing.Color.Transparent;
+            this.btnCancel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btnCancel.FlatAppearance.BorderSize = 0;
+            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancel.Location = new System.Drawing.Point(183, 340);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(102, 33);
+            this.btnCancel.TabIndex = 21;
+            this.btnCancel.Text = "Cancelar";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Visible = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // Pos
             // 
@@ -506,6 +543,8 @@ namespace Stock_Manager__SIMPLE_
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lbVerName;
         private System.Windows.Forms.TextBox tbVerName;
+        private System.Windows.Forms.Button btnChangeImg;
+        private System.Windows.Forms.Button btnCancel;
     }
 }
 

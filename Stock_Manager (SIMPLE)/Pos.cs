@@ -117,13 +117,14 @@ namespace Stock_Manager__SIMPLE_
 
             if (lbProduct.Items.Count == 0)
             {
+                tbVerName.Text = null;
                 tbTotal.Text = null;
                 tbVerQuant.Text = null;
                 pbProduct.BackgroundImage = null;
             }
         }
 
-        static OpenFileDialog open = new OpenFileDialog();
+        public static OpenFileDialog open = new OpenFileDialog();
         public static int fileopened = 0;
 
         private void btnCancelar_Click(object sender, EventArgs e)
@@ -136,7 +137,6 @@ namespace Stock_Manager__SIMPLE_
             pbPreView.BackgroundImage = null;
             fileopened = 0;
         }
-
 
         private void btnAddImg_Click(object sender, EventArgs e)
         {
@@ -213,21 +213,6 @@ namespace Stock_Manager__SIMPLE_
             tbQuant.Text = "0";
         }
 
-        public static void InsertImage(int id)
-        {
-            Bitmap productImage = new Bitmap(open.FileName);
-            string path = Application.StartupPath;
-            string totalpath = path + "\\Images\\" + id + ".jpg";
-            productImage.Save(totalpath, ImageFormat.Jpeg);
-        }
-
-        public static void DeleteImage(int id)
-        {
-            string path = Application.StartupPath;
-            string totalpath = path + "\\Images\\" + id + ".jpg";
-            File.Delete(totalpath);
-        }
-
         private void tbQuant_Click(object sender, EventArgs e)
         {
             tbQuant.SelectAll();
@@ -238,20 +223,27 @@ namespace Stock_Manager__SIMPLE_
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
-            tbTotal.Text = tbTotal.Text.Substring(0, tbTotal.Text.Length - 2);
-            tbTotal.ReadOnly = false;
-            tbVerQuant.ReadOnly = false;
-            btnEditar.Visible = false;
-            lbProduct.Enabled = false;
-            tbCod.Enabled = false;
-            btnSearch.Enabled = false;
-            btnSearch.BackColor = Color.White;
-            btnAdd.Enabled = false;
-            btnDelete.Enabled = false;
-            btnSave.Visible = true;
-            tbVerName.ReadOnly = false;
-            tbTotalText = tbTotal.Text;
-            tbVerQuantText = tbVerQuant.Text;
+            if (lbProduct.Items.Count > 0)
+            {
+                tbTotal.Text = tbTotal.Text.Substring(0, tbTotal.Text.Length - 2);
+                tbTotal.ReadOnly = false;
+                tbVerQuant.ReadOnly = false;
+                btnEditar.Visible = false;
+                lbProduct.Enabled = false;
+                tbCod.Enabled = false;
+                btnSearch.Enabled = false;
+                btnSearch.BackColor = Color.White;
+                btnAdd.Enabled = false;
+                btnDelete.Enabled = false;
+                btnSave.Visible = true;
+                tbVerName.ReadOnly = false;
+                tbTotalText = tbTotal.Text;
+                tbVerQuantText = tbVerQuant.Text;
+                btnChangeImg.Visible = true;
+                btnCancel.Visible = true;
+            }
+            else
+                MessageBox.Show("Não existem produtos!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -265,7 +257,10 @@ namespace Stock_Manager__SIMPLE_
                         if (decimal.TryParse(tbTotal.Text, out decimal price))
                         {
                             if (int.TryParse(tbVerQuant.Text, out int quant))
+                            {
                                 bd.UpdateData(tbVerName.Text, price, quant, (int)lbProduct.SelectedValue);
+                                pbProduct.BackgroundImage.Dispose();
+                            }
                             else
                                 MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
@@ -275,7 +270,10 @@ namespace Stock_Manager__SIMPLE_
                     else
                     {
                         if (int.TryParse(tbVerQuant.Text, out int quant))
+                        {
                             bd.UpdateData(tbVerName.Text, 0, quant, (int)lbProduct.SelectedValue);
+                            pbProduct.BackgroundImage.Dispose();
+                        }
                         else
                             MessageBox.Show("O valor que inseriu na quantidade não é válido", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -285,18 +283,23 @@ namespace Stock_Manager__SIMPLE_
                     if (!string.IsNullOrEmpty(tbPrice.Text))
                     {
                         if (decimal.TryParse(tbTotal.Text, out decimal price))
+                        {
                             bd.UpdateData(tbVerName.Text, price, 0, (int)lbProduct.SelectedValue);
+                            pbProduct.BackgroundImage.Dispose();
+                        }
                         else
                             MessageBox.Show("O preço deve ser válido e separado por uma virgula!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
+                    {
                         bd.UpdateData(tbVerName.Text, 0, 0, (int)lbProduct.SelectedValue);
+                        pbProduct.BackgroundImage.Dispose();
+                    }
                 }
             }
             else
                 MessageBox.Show("Indique o nome do produto!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            tbTotal.Text = string.Format("{0} €", tbTotal.Text);
             tbTotal.ReadOnly = true;
             tbVerQuant.ReadOnly = true;
             btnEditar.Visible = true;
@@ -308,8 +311,46 @@ namespace Stock_Manager__SIMPLE_
             btnDelete.Enabled = true;
             btnSave.Visible = false;
             tbVerName.ReadOnly = true;
+            btnChangeImg.Visible = false;
+            btnCancel.Visible = false;
             bd.Products(lbProduct);
         }
 
+        private void btnChangeImg_Click(object sender, EventArgs e)
+        {
+            open.Filter = "Imagens (*.BMP;*.JPG;*.PNG)|*.BMP;*.JPG;*.JPEG;*.PNG";
+            open.Title = "Selecionar imagem";
+            open.Multiselect = false;
+            open.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            open.CheckFileExists = true;
+            open.CheckPathExists = true;
+            open.ShowReadOnly = true;
+            if (open.ShowDialog() == DialogResult.OK)
+            {
+                pbProduct.BackgroundImage.Dispose();
+                Bitmap productImage = new Bitmap(open.FileName);
+                pbProduct.BackgroundImage = new Bitmap(productImage);
+                productImage.Dispose();
+                fileopened = 1;
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            tbTotal.ReadOnly = true;
+            tbVerQuant.ReadOnly = true;
+            btnEditar.Visible = true;
+            lbProduct.Enabled = true;
+            tbCod.Enabled = true;
+            btnSearch.Enabled = true;
+            btnSearch.BackColor = Color.Black;
+            btnAdd.Enabled = true;
+            btnDelete.Enabled = true;
+            btnSave.Visible = false;
+            tbVerName.ReadOnly = true;
+            btnChangeImg.Visible = false;
+            btnCancel.Visible = false;
+            bd.Products(lbProduct);
+        }
     }
 }
